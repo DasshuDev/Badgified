@@ -2,7 +2,7 @@
 #include "BadgesCommentCell.hpp"
 #include "BadgesPopup.hpp"
 #include "BadgesProfilePage.hpp"
-#include "badgified.hpp"
+#include "Badgified.hpp"
 
 Badges *Badges::get() {
   static Badges instance;

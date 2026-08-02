@@ -1,7 +1,6 @@
 #include "Badges.hpp"
-#include "badgified.hpp"
+#include "Badgified.hpp"
 #include <Geode/Geode.hpp>
-
 
 using namespace geode::prelude;
 using namespace dasshu::badgified;

@@ -1,7 +1,7 @@
 #include "BadgesCommentCell.hpp"
 #include "Badges.hpp"
 #include "BadgesPopup.hpp"
-#include "badgified.hpp"
+#include "Badgified.hpp"
 
 void BadgesCommentCell::loadFromComment(GJComment *comment) {
   if (!comment || comment->m_levelID == 0)

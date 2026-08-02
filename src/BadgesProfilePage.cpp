@@ -1,6 +1,6 @@
 #include "BadgesProfilePage.hpp"
 #include "BadgesPopup.hpp"
-#include "badgified.hpp"
+#include "Badgified.hpp"
 
 bool BadgesProfilePage::init(int accountID, bool ownProfile) {
   // adding here since loadPageFromUserInfo can happen in init if info already

@@ -1,6 +1,6 @@
 #pragma once
 
-#include "badgified.hpp"
+#include "Badgified.hpp"
 #include <Geode/Geode.hpp>
 
 using namespace geode::prelude;

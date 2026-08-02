@@ -1,6 +1,6 @@
 #include "BadgesPopup.hpp"
 #include "Badges.hpp"
-#include "badgified.hpp"
+#include "Badgified.hpp"
 
 BadgesPopup *
 BadgesPopup::create(GJUserScore *score, dasshu::badgified::ModStatus modStatus,

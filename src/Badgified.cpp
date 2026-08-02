@@ -1,8 +1,7 @@
 #define GEODE_DEFINE_EVENT_EXPORTS
+#include "Badgified.hpp"
 #include "Badges.hpp"
-#include "badgified.hpp"
 #include <Geode/Geode.hpp>
-
 
 using namespace geode::prelude;
 

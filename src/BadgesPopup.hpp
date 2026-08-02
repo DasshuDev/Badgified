@@ -1,10 +1,9 @@
 #pragma once
 
 #include "Badges.hpp"
+#include "Badgified.hpp"
 #include "RenderNode.hpp"
-#include "badgified.hpp"
 #include <Geode/Geode.hpp>
-
 
 using namespace geode::prelude;
 
