@@ -1,0 +1,44 @@
+{
+    "geode": "5.8.2",
+    "gd": {
+        "win": "2.2081",
+        "android": "2.2081",
+        "mac": "2.2081",
+        "ios": "2.2081"
+    },
+    "id": "dasshu.badgified",
+    "name": "Badgified",
+    "version": "v1.0.0",
+    "developer": "DasshuDev",
+    "description": "Easy to use API for adding custom badges!",
+    "dependencies": {
+        "geode.node-ids": ">=v1.20.0"
+    },
+    "resources": {
+        "sprites": [
+            "resources/*.png"
+        ]
+    },
+    "api": {
+        "include": [
+            "include/*.hpp"
+        ]
+    },
+    "links": {
+        "homepage": "https://dasshu.dev/",
+        "source": "https://github.com/DasshuDev/badgified"
+    },
+    "tags": [
+        "developer",
+        "interface",
+        "api"
+    ],
+    "settings": {
+        "alternative-profile-badge-design": {
+            "name": "Show Badges Under Username",
+            "description": "Shows badges <cg>under</c> the username instead of <cy>beside</c> it on the profile.",
+            "type": "bool",
+            "default": true
+        }
+    }
+}
