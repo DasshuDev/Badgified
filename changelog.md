@@ -1,2 +1,2 @@
 # v1.0.0
-- Initial commit to Badgified
+- Initial release of the Badgified API
