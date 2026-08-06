@@ -1,3 +1,6 @@
+# v1.0.2
+- Fix casing in `waitForBadgified`
+
 # v1.0.1
 - Fix comment colors of Elder Moderators not appearing properly.
 

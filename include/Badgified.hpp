@@ -38,7 +38,7 @@ inline bool isLoaded() {
   return geode::Loader::get()->getLoadedMod("dasshu.badgified") != nullptr;
 }
 
-template <typename F> void waitForbadgified(F &&callback) {
+template <typename F> void waitForBadgified(F &&callback) {
   if (isLoaded()) {
     callback();
   } else {
