@@ -24,7 +24,6 @@ $on_mod(Loaded) {
             if (badge.location == Location::InfoPopup) spr = CCSprite::create("mod-large.png"_spr);
             else spr = CCSprite::createWithSpriteFrameName("modBadge_01_001.png");
             Badges::get()->showBadge(badge, spr);
-            Badges::get()->setCommentColor("moderator"_spr, {200, 255, 200});
         }
     });
 
@@ -45,7 +44,6 @@ $on_mod(Loaded) {
             if (badge.location == Location::InfoPopup) spr = CCSprite::create("elder-mod-large.png"_spr);
             else spr = CCSprite::createWithSpriteFrameName("modBadge_02_001.png");
             Badges::get()->showBadge(badge, spr);
-            Badges::get()->setCommentColor("elder-moderator"_spr, {75, 255, 75});
         }
     });
 
@@ -68,4 +66,7 @@ $on_mod(Loaded) {
             // No badge color for Leaderboard Moderators
         }
     });
+
+    Badges::get()->setCommentColor("moderator"_spr, {200, 255, 200});
+    Badges::get()->setCommentColor("elder-moderator"_spr, {75, 255, 75});
 }

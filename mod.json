@@ -8,7 +8,7 @@
     },
     "id": "dasshu.badgified",
     "name": "Badgified",
-    "version": "v1.0.0",
+    "version": "v1.0.1",
     "developer": "DasshuDev",
     "description": "Easy to use API for adding custom badges!",
     "dependencies": {
