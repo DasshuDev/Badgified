@@ -1,33 +1,9 @@
 #include "RenderNode.hpp"
 #include <Geode/Geode.hpp>
-#include <Geode/modify/CCNode.hpp>
-#include <Geode/modify/GameToolbox.hpp>
 
 
 using namespace geode::prelude;
 using namespace dasshu::badgified;
-
-// yoinked from devtools
-class $modify(GameToolbox) {
-  static void preVisitWithClippingRect(CCNode *node, CCRect clipRect) {
-    if (!node->isVisible())
-      return GameToolbox::preVisitWithClippingRect(node, clipRect);
-
-    glEnable(GL_SCISSOR_TEST);
-    clipRect.origin = node->convertToWorldSpace(clipRect.origin);
-    kmMat4 mat;
-
-    kmGLGetMatrix(KM_GL_PROJECTION, &mat);
-    if (mat.mat[5] < 0) {
-      auto ws = CCDirector::get()->getWinSize();
-      clipRect.origin.y =
-          ws.height - (clipRect.origin.y + node->getContentSize().height);
-    }
-    CCEGLView::get()->setScissorInPoints(clipRect.origin.x, clipRect.origin.y,
-                                         clipRect.size.width,
-                                         clipRect.size.height);
-  }
-};
 
 class CCTexture2DExt : public CCTexture2D {
 public:
