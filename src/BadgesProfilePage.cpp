@@ -36,6 +36,7 @@ bool BadgesProfilePage::init(int accountID, bool ownProfile) {
       owningBadge->user = nullptr;
       owningBadge->target = nullptr;
     }
+    unschedule(schedule_selector(BadgesProfilePage::fixInfoButton));
   });
 
   return true;
@@ -43,6 +44,10 @@ bool BadgesProfilePage::init(int accountID, bool ownProfile) {
 
 void BadgesProfilePage::fixInfoButton(float dt) {
   auto fields = m_fields.self();
+
+  if (!fields->m_usernameMenu || !fields->m_infoButton || !m_usernameLabel ||
+      !m_buttonMenu)
+    return;
 
   auto world = fields->m_usernameMenu->convertToWorldSpace(
       m_usernameLabel->getPosition());

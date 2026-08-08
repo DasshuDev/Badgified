@@ -1,3 +1,6 @@
+# v1.0.3
+- Fix crash when blocking a user.
+
 # v1.0.2
 - Fix casing in `waitForBadgified`
 - Fix crash when using DevTools' `RenderNode` <c-33333b>(i hope)</c>

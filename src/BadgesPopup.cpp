@@ -349,6 +349,14 @@ void BadgesPopup::setNavigationButtonStates() {
 }
 
 void BadgesPopup::goToPage(bool instant) {
+  auto pageCount =
+      static_cast<int>(
+          m_badgesContainer->getChildrenExt<dasshu::badgified::RenderNode>()
+              .size());
+  if (pageCount == 0)
+    return;
+  m_page = std::clamp(m_page, 0, pageCount - 1);
+
   for (int i = 0; i < m_page - 2; i++) {
     setBadge(i, 0, -1000.f, 0.f, true);
   }
