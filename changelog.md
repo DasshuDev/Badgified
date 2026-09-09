@@ -1,3 +1,8 @@
+# v1.0.4
+- Bump to Geode v5.10.1
+- Changed the UI of the badge popup a bit.
+- Added a label to indicate badge parent mod.
+
 # v1.0.3
 - Fix crash when blocking a user.
 

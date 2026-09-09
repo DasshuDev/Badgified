@@ -1,5 +1,5 @@
 {
-    "geode": "5.8.2",
+    "geode": "5.10.1",
     "gd": {
         "win": "2.2081",
         "android": "2.2081",
@@ -8,7 +8,7 @@
     },
     "id": "dasshu.badgified",
     "name": "Badgified",
-    "version": "v1.0.3",
+    "version": "v1.0.4",
     "developer": "DasshuDev",
     "description": "Easy to use API for adding custom badges!",
     "dependencies": {

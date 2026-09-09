@@ -2,10 +2,9 @@
 #include "Badges.hpp"
 #include "Badgified.hpp"
 
-BadgesPopup *
-BadgesPopup::create(GJUserScore *score, dasshu::badgified::ModStatus modStatus,
-                    std::vector<dasshu::badgified::BadgeInfo *> *info,
-                    dasshu::badgified::BadgeInfo *current) {
+using namespace dasshu::badgified;
+
+BadgesPopup* BadgesPopup::create(GJUserScore *score, ModStatus modStatus, std::vector<BadgeInfo *> *info, BadgeInfo *current) {
   auto ret = new BadgesPopup();
   if (ret->init(score, modStatus, info, current)) {
     ret->autorelease();
@@ -15,10 +14,7 @@ BadgesPopup::create(GJUserScore *score, dasshu::badgified::ModStatus modStatus,
   return nullptr;
 }
 
-bool BadgesPopup::init(GJUserScore *score,
-                       dasshu::badgified::ModStatus modStatus,
-                       std::vector<dasshu::badgified::BadgeInfo *> *info,
-                       dasshu::badgified::BadgeInfo *current) {
+bool BadgesPopup::init(GJUserScore *score, ModStatus modStatus, std::vector<BadgeInfo *> *info, BadgeInfo *current) {
   auto winSize = CCDirector::get()->getWinSize();
 
   Popup::init(winSize);
@@ -42,13 +38,15 @@ bool BadgesPopup::init(GJUserScore *score,
   m_badgesContainer->setAnchorPoint({0.5f, 0.5f});
   m_badgesContainer->setContentSize({winSize.width / 3.f, 30});
   m_badgesContainer->setScale(3);
-  m_badgesContainer->setPosition(
-      {winSize.width / 2.f, winSize.height / 2.f + 30.f});
+  m_badgesContainer->setPosition({winSize.width / 2.f, winSize.height / 2.f + 22.f});
 
   m_mainLayer->setID("main-layer");
   m_mainLayer->addChild(m_badgesContainer);
 
-  m_closeBtn->setPosition({30.f, winSize.height - 30.f});
+  auto backSpr = CCSprite::createWithSpriteFrameName("backArrowPlain_01_001.png");
+
+  m_closeBtn->setPosition({35, winSize.height - 35});
+  m_closeBtn->setSprite(backSpr);
   m_closeBtn->setID("close-button");
 
   std::set<std::string> usedIDs;
@@ -92,7 +90,7 @@ bool BadgesPopup::init(GJUserScore *score,
     container->setVisible(false);
     container->setAnchorPoint({0.5f, 0.5f});
 
-    auto render = dasshu::badgified::RenderNode::create(container, true);
+    auto render = RenderNode::create(container, true);
     render->setOpacity(0);
 
     m_badges[render] = badgeInfo;
@@ -116,13 +114,15 @@ bool BadgesPopup::init(GJUserScore *score,
     idx++;
   }
 
-  auto bg = CCLayerColor::create({0, 0, 0, 0});
-  bg->setContentSize(winSize);
+  auto bg = NineSlice::create("square02b_001.png");
+  bg->setContentSize({winSize.width - 20, winSize.height - 20});
   bg->setPosition(winSize / 2.f);
   bg->setAnchorPoint({0.5f, 0.5f});
   bg->ignoreAnchorPointForPosition(false);
   bg->setZOrder(-1000);
+  bg->setColor({0, 0, 0});
   bg->setID("background");
+  bg->setOpacity(0);
 
   addChild(bg);
 
@@ -137,18 +137,25 @@ bool BadgesPopup::init(GJUserScore *score,
 
   m_title->runAction(CCFadeTo::create(0.1f, 255));
 
+  m_modLabel = CCLabelBMFont::create("", "goldFont.fnt");
+  m_modLabel->setID("mod-label");
+  m_modLabel->setScale(0.5);
+  m_modLabel->setPosition({winSize.width / 2.f, winSize.height - 70.f});
+  m_modLabel->setOpacity(0);
+
+  addChild(m_modLabel);
+
+  m_modLabel->runAction(CCFadeTo::create(0.1f, 255));
+
   auto desc = (*info)[0]->description;
-  if (desc.empty())
-    desc = "No description provided.";
+  if (desc.empty()) desc = "No description provided.";
 
   m_description = MDTextArea::create(desc, {380.f, 100.f});
   m_description->setID("badge-description");
   m_description->setAnchorPoint({0.5f, 1.f});
   m_description->setPosition({winSize.width / 2.f, winSize.height / 2.f - 40});
 
-  auto menu =
-      m_description->getScrollLayer()->m_contentLayer->getChildByType<CCMenu *>(
-          0);
+  auto menu = m_description->getScrollLayer()->m_contentLayer->getChildByType<CCMenu *>(0);
   if (menu) {
     menu->setCascadeOpacityEnabled(true);
     menu->setOpacity(0);
@@ -158,29 +165,22 @@ bool BadgesPopup::init(GJUserScore *score,
   m_mainLayer->addChild(m_title);
   m_mainLayer->addChild(m_description);
 
-  auto prevSpr = CCSprite::createWithSpriteFrameName("GJ_arrow_01_001.png");
+  auto prevSpr = CCSprite::createWithSpriteFrameName("GJ_arrow_03_001.png");
 
-  m_prevButton = CCMenuItemSpriteExtra::create(
-      prevSpr, this, menu_selector(BadgesPopup::goToPrevPage));
+  m_prevButton = CCMenuItemSpriteExtra::create(prevSpr, this, menu_selector(BadgesPopup::goToPrevPage));
   m_prevButton->setID("prev-button");
-
-  auto nextSpr = CCSprite::createWithSpriteFrameName("GJ_arrow_01_001.png");
-  nextSpr->setFlipX(true);
-
-  m_nextButton = CCMenuItemSpriteExtra::create(
-      nextSpr, this, menu_selector(BadgesPopup::goToNextPage));
-  m_nextButton->setID("next-button");
-
-  m_prevButton->setPosition(
-      {winSize.width / 2.f - 180, winSize.height / 2.f + 30});
-  m_nextButton->setPosition(
-      {winSize.width / 2.f + 180, winSize.height / 2.f + 30});
-
+  m_prevButton->setPosition({winSize.width / 2.f - 180, winSize.height / 2.f + 22});
   m_prevButton->setOpacity(0);
+  
+  auto nextSpr = CCSprite::createWithSpriteFrameName("GJ_arrow_03_001.png");
+  nextSpr->setFlipX(true);
+  
+  m_nextButton = CCMenuItemSpriteExtra::create(nextSpr, this, menu_selector(BadgesPopup::goToNextPage));
+  m_nextButton->setID("next-button");
+  m_nextButton->setPosition({winSize.width / 2.f + 180, winSize.height / 2.f + 22});
   m_nextButton->setOpacity(0);
 
   m_buttonMenu->setID("main-menu");
-
   m_buttonMenu->addChild(m_prevButton);
   m_buttonMenu->addChild(m_nextButton);
 
@@ -205,18 +205,15 @@ bool BadgesPopup::init(GJUserScore *score,
     }
   });
 
-  Badges::get()->onProfile(this, score, modStatus,
-                           dasshu::badgified::Location::InfoPopup);
+  Badges::get()->onProfile(this, score, modStatus, Location::InfoPopup);
 
   return true;
 }
 
 GJUserScore *BadgesPopup::getScore() { return m_score; }
 
-void BadgesPopup::addBadge(dasshu::badgified::BadgeInfo *info,
-                           CCNode *badgeNode,
-                           std::shared_ptr<dasshu::badgified::Badge> badge) {
-  dasshu::badgified::RenderNode *render = nullptr;
+void BadgesPopup::addBadge(BadgeInfo *info, CCNode *badgeNode, std::shared_ptr<Badge> badge) {
+  RenderNode *render = nullptr;
   for (const auto &[i, n] : m_nodes) {
     if (info == i) {
       render = n;
@@ -233,7 +230,7 @@ void BadgesPopup::addBadge(dasshu::badgified::BadgeInfo *info,
     container->setVisible(false);
     container->setAnchorPoint({0.5f, 0.5f});
 
-    render = dasshu::badgified::RenderNode::create(container, true);
+    render = RenderNode::create(container, true);
     render->setOpacity(0);
 
     m_badges[render] = info;
@@ -244,7 +241,7 @@ void BadgesPopup::addBadge(dasshu::badgified::BadgeInfo *info,
   }
 
   auto container =
-      static_cast<dasshu::badgified::RenderNode *>(render)->getNode();
+      static_cast<RenderNode *>(render)->getNode();
 
   container->removeAllChildren();
 
@@ -266,7 +263,7 @@ void BadgesPopup::addBadge(dasshu::badgified::BadgeInfo *info,
   goToPage(true);
 }
 
-void BadgesPopup::removeBadge(dasshu::badgified::BadgeInfo *info) {
+void BadgesPopup::removeBadge(BadgeInfo *info) {
   auto it = m_nodes.find(info);
   if (it == m_nodes.end())
     return;
@@ -305,7 +302,7 @@ void BadgesPopup::setBadge(int page, float opacity, float xOffset, float scale,
   if (page >= 0 && page <= static_cast<int>(m_badges.size()) - 1) {
 
     m_badgesContainer->sortAllChildren();
-    auto node = static_cast<dasshu::badgified::RenderNode *>(
+    auto node = static_cast<RenderNode *>(
         m_badgesContainer->getChildrenExt()[page]);
     node->stopAllActions();
     scale *= m_renderScales[node];
@@ -351,7 +348,7 @@ void BadgesPopup::setNavigationButtonStates() {
 void BadgesPopup::goToPage(bool instant) {
   auto pageCount =
       static_cast<int>(
-          m_badgesContainer->getChildrenExt<dasshu::badgified::RenderNode>()
+          m_badgesContainer->getChildrenExt<RenderNode>()
               .size());
   if (pageCount == 0)
     return;
@@ -371,21 +368,33 @@ void BadgesPopup::goToPage(bool instant) {
 
   // goofy touch fix :3
   for (auto child :
-       m_badgesContainer->getChildrenExt<dasshu::badgified::RenderNode>()) {
+       m_badgesContainer->getChildrenExt<RenderNode>()) {
     auto container = child->getNode();
     container->setPosition({-100000, -100000});
   }
 
   auto currentRender =
       m_badgesContainer
-          ->getChildrenExt<dasshu::badgified::RenderNode>()[m_page];
+          ->getChildrenExt<RenderNode>()[m_page];
   auto container = currentRender->getNode();
   container->setPosition(currentRender->getContentSize() / 2.f);
 
-  m_title->setString(
-      m_badges[m_badgesContainer->getChildrenExt()[m_page]]->name.c_str());
-  m_description->setString(m_badges[m_badgesContainer->getChildrenExt()[m_page]]
-                               ->description.c_str());
+  auto currentBadgeInfo = m_badges[m_badgesContainer->getChildrenExt()[m_page]];
+
+  m_title->setString(currentBadgeInfo->name.c_str());
+  m_description->setString(currentBadgeInfo->description.c_str());
+
+  std::string modName;
+  if (currentBadgeInfo->id == "moderator"_spr ||
+      currentBadgeInfo->id == "elder-moderator"_spr ||
+      currentBadgeInfo->id == "leaderboard-moderator"_spr) {
+    modName = "RobTop";
+  } else {
+    auto modID = currentBadgeInfo->id.substr(0, currentBadgeInfo->id.find('/'));
+    auto mod = Loader::get()->getInstalledMod(modID);
+    modName = mod ? std::string(mod->getName()) : modID;
+  }
+  m_modLabel->setString(fmt::format("Added by: {}", modName).c_str());
 
   m_prevButton->setEnabled(m_page != 0);
   m_nextButton->setEnabled(m_page != static_cast<int>(m_badges.size()) - 1);
