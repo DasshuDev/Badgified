@@ -1,10 +1,10 @@
-# badgified
-
+# Badgified
 An API for adding badges to profiles and comments easily.
 
-## The API
+---
 
-It is extremely simple, here's an example on how to register and modify a badge:
+## The API
+The API is extremely simple to navigate. Here's an example on how to register and modify a badge:
 
 ```cpp
 using namespace dasshu::badgified;
