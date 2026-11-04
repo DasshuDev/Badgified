@@ -29,6 +29,8 @@ protected:
   void keyDown(cocos2d::enumKeyCodes key, double p1) override;
 
   int m_page = 0;
+  // while true, addBadge skips goToPage(); init() calls it once afterwards
+  bool m_batching = false;
   GJUserScore *m_score;
   CCMenuItemSpriteExtra *m_prevButton;
   CCMenuItemSpriteExtra *m_nextButton;

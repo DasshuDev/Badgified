@@ -9,6 +9,11 @@ Badges *Badges::get() {
   return &instance;
 }
 
+bool Badges::isModeratorBadge(std::string_view id) {
+  return id == "advisor"_spr || id == "moderator"_spr ||
+         id == "leaderboard-moderator"_spr;
+}
+
 // clone the sprite
 static CCSprite *cloneSprite(CCSprite *src) {
   auto ret = CCSprite::createWithSpriteFrame(src->displayFrame());
@@ -149,22 +154,22 @@ Result<cocos2d::ccColor3B> Badges::getCommentColor(ZStringView id) {
 
 std::optional<cocos2d::ccColor3B> Badges::resolveCommentColor(
   const std::vector<dasshu::badgified::BadgeInfo *> &badges) {
-  dasshu::badgified::BadgeInfo *elder = nullptr;
   dasshu::badgified::BadgeInfo *mod = nullptr;
+  dasshu::badgified::BadgeInfo *advisor = nullptr;
   dasshu::badgified::BadgeInfo *leaderboard = nullptr;
   dasshu::badgified::BadgeInfo *bestCustom = nullptr;
 
   for (auto info : badges) {
-    if (info->id == "elder-moderator"_spr) elder = info;
-    else if (info->id == "moderator"_spr) mod = info;
+    if (info->id == "moderator"_spr) mod = info;
+    else if (info->id == "advisor"_spr) advisor = info;
     else if (info->id == "leaderboard-moderator"_spr) leaderboard = info;
     else if (info->color && !bestCustom) {
       bestCustom = info;
     }
   }
 
-  if (elder && elder->color) return elder->color;
   if (mod && mod->color) return mod->color;
+  if (advisor && advisor->color) return advisor->color;
   if (leaderboard && leaderboard->color) return leaderboard->color;
   if (bestCustom) return bestCustom->color;
   return std::nullopt;

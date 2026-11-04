@@ -21,6 +21,10 @@ class $modify(BadgesCommentCell, CommentCell) {
     std::unordered_map<dasshu::badgified::BadgeInfo *, Ref<CCNode>>
         m_badgeNodes;
     bool m_canAddBadge = false;
+    // while true, badge changes only mark the cell dirty and are applied once
+    // by flushBadges(), instead of rebuilding and re-laying out per badge
+    bool m_batching = false;
+    bool m_dirty = false;
     cocos2d::ccColor3B m_originalColor = {255, 255, 255};
 
     ~Fields() {
@@ -37,6 +41,7 @@ class $modify(BadgesCommentCell, CommentCell) {
   void setupBadges();
   void updateBadges();
   void updateColor();
+  void flushBadges();
   void unregisterTouchesRecursive(CCNode *node);
   void addToBadgeContainer(dasshu::badgified::BadgeInfo *info,
                            CCNode *badgeNode);

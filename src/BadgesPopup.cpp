@@ -26,7 +26,7 @@ bool BadgesPopup::init(GJUserScore *score, ModStatus modStatus, std::vector<Badg
     stopAllActions();
   });
 
-  setID("badges-popup");
+  setID("BadgesPopup");
 
   m_score = score;
 
@@ -54,9 +54,7 @@ bool BadgesPopup::init(GJUserScore *score, ModStatus modStatus, std::vector<Badg
   bool containsMod = false;
 
   for (auto badgeInfo : *info) {
-    if (badgeInfo->id == "moderator"_spr ||
-        badgeInfo->id == "elder-moderator"_spr ||
-        badgeInfo->id == "leaderboard-moderator"_spr) {
+    if (Badges::isModeratorBadge(badgeInfo->id)) {
       containsMod = true;
       break;
     }
@@ -68,17 +66,13 @@ bool BadgesPopup::init(GJUserScore *score, ModStatus modStatus, std::vector<Badg
       continue;
 
     if (current == badgeInfo) {
-      if (badgeInfo->id == "moderator"_spr ||
-          badgeInfo->id == "elder-moderator"_spr ||
-          badgeInfo->id == "leaderboard-moderator"_spr) {
+      if (Badges::isModeratorBadge(badgeInfo->id)) {
         m_page = 0;
       } else {
         m_page = idx;
       }
     } else {
-      if (badgeInfo->id == "moderator"_spr ||
-          badgeInfo->id == "elder-moderator"_spr ||
-          badgeInfo->id == "leaderboard-moderator"_spr) {
+      if (Badges::isModeratorBadge(badgeInfo->id)) {
         idx -= 1;
         m_page = idx;
       }
@@ -97,9 +91,7 @@ bool BadgesPopup::init(GJUserScore *score, ModStatus modStatus, std::vector<Badg
     m_nodes[badgeInfo] = render;
     m_realNodes[badgeInfo] = container;
 
-    if (badgeInfo->id == "moderator"_spr ||
-        badgeInfo->id == "elder-moderator"_spr ||
-        badgeInfo->id == "leaderboard-moderator"_spr) {
+    if (Badges::isModeratorBadge(badgeInfo->id)) {
       if (m_badgesContainer->getChildrenCount() > 0) {
         auto first = m_badgesContainer->getChildrenExt()[0];
         m_badgesContainer->insertBefore(render, first);
@@ -114,19 +106,31 @@ bool BadgesPopup::init(GJUserScore *score, ModStatus modStatus, std::vector<Badg
     idx++;
   }
 
-  auto bg = NineSlice::create("square02b_001.png");
+  auto bgDim = CCLayerColor::create();
+  bgDim->setColor({ 0, 0, 0 });
+  // bgDim->setContentSize({winSize.width, winSize.height});
+  bgDim->setPosition(winSize / 2.f);
+  bgDim->setAnchorPoint({0.5f, 0.5f});
+  bgDim->ignoreAnchorPointForPosition(false);
+  bgDim->setZOrder(-1000);
+  // bgDim->setID("background-dim");
+  bgDim->setOpacity(0);
+
+  addChild(bgDim);
+
+  auto bg = NineSlice::create("GJ_square01.png");
   bg->setContentSize({winSize.width - 20, winSize.height - 20});
   bg->setPosition(winSize / 2.f);
   bg->setAnchorPoint({0.5f, 0.5f});
   bg->ignoreAnchorPointForPosition(false);
-  bg->setZOrder(-1000);
-  bg->setColor({0, 0, 0});
+  bg->setZOrder(-999);
+  // bg->setColor({0, 0, 0});
   bg->setID("background");
-  bg->setOpacity(0);
+  // bg->setOpacity(0);
 
   addChild(bg);
 
-  bg->runAction(CCFadeTo::create(0.1f, 220));
+  // bg->runAction(CCFadeTo::create(0.1f, 255));
 
   m_title = CCLabelBMFont::create((*info)[0]->name.c_str(), "bigFont.fnt");
   m_title->setID("badge-name");
@@ -145,7 +149,7 @@ bool BadgesPopup::init(GJUserScore *score, ModStatus modStatus, std::vector<Badg
 
   addChild(m_modLabel);
 
-  m_modLabel->runAction(CCFadeTo::create(0.1f, 255));
+  // m_modLabel->runAction(CCFadeTo::create(0.1f, 255));
 
   auto desc = (*info)[0]->description;
   if (desc.empty()) desc = "No description provided.";
@@ -185,7 +189,7 @@ bool BadgesPopup::init(GJUserScore *score, ModStatus modStatus, std::vector<Badg
   m_buttonMenu->addChild(m_nextButton);
 
   m_closeBtn->setOpacity(0);
-  m_closeBtn->runAction(CCFadeTo::create(0.1f, 255));
+  // m_closeBtn->runAction(CCFadeTo::create(0.1f, 255));
 
   goToPage(true);
 
@@ -205,7 +209,10 @@ bool BadgesPopup::init(GJUserScore *score, ModStatus modStatus, std::vector<Badg
     }
   });
 
+  m_batching = true;
   Badges::get()->onProfile(this, score, modStatus, Location::InfoPopup);
+  m_batching = false;
+  goToPage(true);
 
   return true;
 }
@@ -214,11 +221,8 @@ GJUserScore *BadgesPopup::getScore() { return m_score; }
 
 void BadgesPopup::addBadge(BadgeInfo *info, CCNode *badgeNode, std::shared_ptr<Badge> badge) {
   RenderNode *render = nullptr;
-  for (const auto &[i, n] : m_nodes) {
-    if (info == i) {
-      render = n;
-      break;
-    }
+  if (auto it = m_nodes.find(info); it != m_nodes.end()) {
+    render = it->second;
   }
 
   m_owningBadges.push_back(badge);
@@ -260,7 +264,8 @@ void BadgesPopup::addBadge(BadgeInfo *info, CCNode *badgeNode, std::shared_ptr<B
   render->setPositionY(m_badgesContainer->getContentHeight() / 2.f);
 
   container->setVisible(true);
-  goToPage(true);
+  if (!m_batching)
+    goToPage(true);
 }
 
 void BadgesPopup::removeBadge(BadgeInfo *info) {
@@ -314,9 +319,9 @@ void BadgesPopup::setBadge(int page, float opacity, float xOffset, float scale,
       node->runAction(CCMoveTo::create(
           0.1f, {m_badgesContainer->getContentWidth() / 2.f + xOffset,
                  node->getPositionY()}));
-      node->runAction(CCScaleTo::create(0.1f, scale));
+      // node->runAction(CCScaleTo::create(0.1f, scale));
     }
-    node->runAction(CCFadeTo::create(0.1f, opacity));
+    // node->runAction(CCFadeTo::create(0.1f, opacity));
   }
 }
 
@@ -381,9 +386,7 @@ void BadgesPopup::goToPage(bool instant) {
   m_description->setString(currentBadgeInfo->description.c_str());
 
   std::string modName;
-  if (currentBadgeInfo->id == "moderator"_spr ||
-      currentBadgeInfo->id == "elder-moderator"_spr ||
-      currentBadgeInfo->id == "leaderboard-moderator"_spr) {
+  if (Badges::isModeratorBadge(currentBadgeInfo->id)) {
     modName = "RobTop";
   } else {
     auto modID = currentBadgeInfo->id.substr(0, currentBadgeInfo->id.find('/'));

@@ -91,8 +91,7 @@ void BadgesProfilePage::setupBadgeNode() {
       auto height = badgeNode->getContentHeight();
       auto scale = 23 / height;
 
-      if (info->id == "moderator"_spr || info->id == "elder-moderator"_spr ||
-          info->id == "leaderboard-moderator"_spr) {
+      if (Badges::isModeratorBadge(info->id)) {
         badgeNode->setZOrder(0);
       } else {
         badgeNode->setZOrder(-idx);
@@ -127,8 +126,7 @@ void BadgesProfilePage::setupBadgeNode() {
           badgeNode, this, menu_selector(BadgesProfilePage::onBadges));
       btn->setID(fmt::format("{}-badge", info->id));
 
-      if (info->id == "moderator"_spr || info->id == "elder-moderator"_spr ||
-          info->id == "leaderboard-moderator"_spr) {
+      if (Badges::isModeratorBadge(info->id)) {
         btn->setZOrder(-1);
       } else {
         btn->setZOrder(idx);
@@ -173,10 +171,7 @@ void BadgesProfilePage::loadPageFromUserInfo(GJUserScore *score) {
     updateBadges();
     schedule(schedule_selector(BadgesProfilePage::fixInfoButton));
 
-    Badges::get()->onProfile(
-        this, m_score,
-        static_cast<dasshu::badgified::ModStatus>(m_score->m_modBadge),
-        dasshu::badgified::Location::Profile);
+    runOnProfile(m_score);
   } else {
     if (!fields->m_badgeMenu) {
       fields->m_badgeMenu = CCMenu::create();
@@ -244,21 +239,53 @@ void BadgesProfilePage::loadPageFromUserInfo(GJUserScore *score) {
       m_mainLayer->addChild(fields->m_badgeMenu);
 
       updateBadges();
-      Badges::get()->onProfile(
-          this, score,
-          static_cast<dasshu::badgified::ModStatus>(score->m_modBadge),
-          dasshu::badgified::Location::Profile);
+      runOnProfile(score);
     } else {
       fields->m_badges.clear();
       fields->m_badgeMenu->removeAllChildren();
       setupBadgeNode();
       updateBadges();
-      Badges::get()->onProfile(
-          this, score,
-          static_cast<dasshu::badgified::ModStatus>(score->m_modBadge),
-          dasshu::badgified::Location::Profile);
+      runOnProfile(score);
     }
   }
+}
+
+void BadgesProfilePage::runOnProfile(GJUserScore *score) {
+  auto fields = m_fields.self();
+
+  fields->m_batching = true;
+  Badges::get()->onProfile(
+      this, score,
+      static_cast<dasshu::badgified::ModStatus>(score->m_modBadge),
+      dasshu::badgified::Location::Profile);
+  fields->m_batching = false;
+  flushBadges();
+}
+
+void BadgesProfilePage::flushBadges() {
+  auto fields = m_fields.self();
+  if (!fields->m_dirty)
+    return;
+  fields->m_dirty = false;
+
+  setupBadgeNode();
+  updateBadges();
+}
+
+// width the badge menu will have once laid out; used while batching, since
+// the real content width only updates on updateLayout()
+float BadgesProfilePage::estimatedBadgeMenuWidth() {
+  auto fields = m_fields.self();
+
+  float width = 0.f;
+  for (const auto &[info, badgeNode] : fields->m_badgeNodes) {
+    auto height = badgeNode->getContentHeight();
+    if (height > 0.f)
+      width += badgeNode->getContentWidth() * (15.f / height);
+  }
+  if (fields->m_badgeNodes.size() > 1)
+    width += 3.f * (fields->m_badgeNodes.size() - 1);
+  return width;
 }
 
 void BadgesProfilePage::addBadge(
@@ -278,7 +305,10 @@ void BadgesProfilePage::addBadge(
       addToBadgeContainer(info, badgeNode);
     }
   } else {
-    if (fields->m_badgeMenu->getContentWidth() <= 315.f) {
+    auto menuWidth = fields->m_batching
+                         ? estimatedBadgeMenuWidth()
+                         : fields->m_badgeMenu->getContentWidth();
+    if (menuWidth <= 315.f) {
       addToBadgeContainer(info, badgeNode);
     }
   }
@@ -358,6 +388,11 @@ void BadgesProfilePage::addToBadgeContainer(dasshu::badgified::BadgeInfo *info,
   auto fields = m_fields.self();
   fields->m_badgeNodes[info] = badgeNode;
 
+  if (fields->m_batching) {
+    fields->m_dirty = true;
+    return;
+  }
+
   setupBadgeNode();
   updateBadges();
 }
@@ -370,9 +405,7 @@ void BadgesProfilePage::onBadges(CCObject *sender) {
   if (!fields->m_alterativeDesign) {
     info = fields->m_badges[0];
     for (const auto &[badgeInfo, badgeNode] : fields->m_badgeNodes) {
-      if (badgeInfo->id == "moderator"_spr ||
-          badgeInfo->id == "elder-moderator"_spr ||
-          badgeInfo->id == "leaderboard-moderator"_spr) {
+      if (Badges::isModeratorBadge(badgeInfo->id)) {
         info = badgeInfo;
         break;
       }

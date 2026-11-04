@@ -25,7 +25,7 @@ $execute {
         // Show the badge when a Location::Profile, Location::Comment,
         // or Location::InfoPopup is loaded.
         [] (const Badge& badge) {
-            if (badge.modStatus == ModStatus::Regular) {
+            if (badge.modStatus == ModStatus::Advisor) {
                 showBadge(badge, CCSprite::createWithSpriteFrameName("modBadge_01_001.png"));
                 // showBadge can be called at any time
                 // and requires the Badge object and node.

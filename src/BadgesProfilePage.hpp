@@ -4,7 +4,6 @@
 #include <Geode/Geode.hpp>
 #include <Geode/modify/ProfilePage.hpp>
 
-
 using namespace geode::prelude;
 
 class $modify(BadgesProfilePage, ProfilePage) {
@@ -25,6 +24,10 @@ class $modify(BadgesProfilePage, ProfilePage) {
     std::unordered_map<CCNode *, CCNode *> m_btnToBadge;
 
     bool m_alterativeDesign;
+    // while true, badge changes only mark the page dirty and are applied once
+    // by flushBadges(), instead of rebuilding and re-laying out per badge
+    bool m_batching = false;
+    bool m_dirty = false;
 
     ~Fields() {
       for (const auto &owningBadge : m_owningBadges) {
@@ -40,6 +43,9 @@ class $modify(BadgesProfilePage, ProfilePage) {
   void removeBadge(dasshu::badgified::BadgeInfo *info);
   void updateBadges();
   void setupBadgeNode();
+  void runOnProfile(GJUserScore *score);
+  void flushBadges();
+  float estimatedBadgeMenuWidth();
   void fixInfoButton(float dt);
   void unregisterTouchesRecursive(CCNode *node);
   void addToBadgeContainer(dasshu::badgified::BadgeInfo *info,

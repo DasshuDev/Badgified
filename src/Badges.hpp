@@ -13,6 +13,9 @@ class Badges {
 public:
   static Badges *get();
 
+  // the built-in RobTop moderator badges registered in main.cpp
+  static bool isModeratorBadge(std::string_view id);
+
   void showBadge(const dasshu::badgified::Badge &badge,
                  cocos2d::CCNode *badgeNode);
   void removeBadge(std::shared_ptr<dasshu::badgified::Badge> badge,

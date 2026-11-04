@@ -52,10 +52,10 @@ struct RenderNode::Impl final {
 RenderNode::RenderNode() : m_impl(std::make_unique<Impl>()) {}
 
 RenderNode::~RenderNode() {
+  // m_texture is owned by the CCTexture2DExt passed to setTexture(), which
+  // deletes it when released, so only the FBO is ours to free
   if (m_impl->m_fbo)
     glDeleteFramebuffers(1, &m_impl->m_fbo);
-  if (m_impl->m_texture)
-    glDeleteTextures(1, &m_impl->m_texture);
 }
 
 RenderNode *RenderNode::create(CCNode *node, bool constrain) {
@@ -258,7 +258,13 @@ void RenderNode::onExit() {
   node->onExit();
 }
 
-void RenderNode::renderUpdate(float dt) { render(); }
+void RenderNode::renderUpdate(float dt) {
+  // nothing on screen would show the result, so skip the offscreen pass
+  // (this also defers creating the FBO until the node is first shown)
+  if (!isVisible() || getOpacity() == 0)
+    return;
+  render();
+}
 
 void RenderNode::addChild(cocos2d::CCNode *child, int zOrder, int tag) {
   auto node = m_impl->m_nodeToRender.lock();

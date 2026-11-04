@@ -85,10 +85,24 @@ void BadgesCommentCell::loadFromComment(GJComment *comment) {
 
   updateBadges();
 
+  fields->m_batching = true;
   Badges::get()->onProfile(
       this, comment->m_userScore,
       static_cast<dasshu::badgified::ModStatus>(originalBadge),
       dasshu::badgified::Location::Comment);
+  fields->m_batching = false;
+  flushBadges();
+}
+
+void BadgesCommentCell::flushBadges() {
+  auto fields = m_fields.self();
+  if (!fields->m_dirty)
+    return;
+  fields->m_dirty = false;
+
+  setupBadges();
+  updateBadges();
+  updateColor();
 }
 
 void BadgesCommentCell::addBadge(
@@ -108,6 +122,11 @@ void BadgesCommentCell::addBadge(
 
   if (fields->m_badges.size() <= 3) {
     addToBadgeContainer(info, badgeNode);
+  }
+
+  if (fields->m_batching) {
+    fields->m_dirty = true;
+    return;
   }
 
   updateColor();
@@ -184,8 +203,7 @@ void BadgesCommentCell::setupBadges() {
     auto containerHeight = fields->m_badgeNode->getContentHeight();
     auto scale = containerHeight / height;
 
-    if (info->id == "moderator"_spr || info->id == "elder-moderator"_spr ||
-        info->id == "leaderboard-moderator"_spr) {
+    if (Badges::isModeratorBadge(info->id)) {
       badgeNode->setZOrder(0);
     } else {
       badgeNode->setZOrder(-idx);
@@ -209,6 +227,11 @@ void BadgesCommentCell::addToBadgeContainer(dasshu::badgified::BadgeInfo *info,
 
   fields->m_badgeNodes[info] = badgeNode;
 
+  if (fields->m_batching) {
+    fields->m_dirty = true;
+    return;
+  }
+
   setupBadges();
   updateBadges();
 }
@@ -220,9 +243,7 @@ void BadgesCommentCell::onBadges(CCObject *sender) {
 
   dasshu::badgified::BadgeInfo *info = fields->m_badges[0];
   for (const auto &[badgeInfo, badgeNode] : fields->m_badgeNodes) {
-    if (badgeInfo->id == "moderator"_spr ||
-        badgeInfo->id == "elder-moderator"_spr ||
-        badgeInfo->id == "leaderboard-moderator"_spr) {
+    if (Badges::isModeratorBadge(badgeInfo->id)) {
       info = badgeInfo;
       break;
     }
