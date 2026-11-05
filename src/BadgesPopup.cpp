@@ -126,11 +126,11 @@ bool BadgesPopup::init(GJUserScore *score, ModStatus modStatus, std::vector<Badg
   bg->setZOrder(-999);
   // bg->setColor({0, 0, 0});
   bg->setID("background");
-  // bg->setOpacity(0);
+  bg->setOpacity(0);
 
   addChild(bg);
 
-  // bg->runAction(CCFadeTo::create(0.1f, 255));
+  bg->runAction(CCFadeTo::create(0.1f, 220));
 
   m_title = CCLabelBMFont::create((*info)[0]->name.c_str(), "bigFont.fnt");
   m_title->setID("badge-name");
@@ -149,7 +149,7 @@ bool BadgesPopup::init(GJUserScore *score, ModStatus modStatus, std::vector<Badg
 
   addChild(m_modLabel);
 
-  // m_modLabel->runAction(CCFadeTo::create(0.1f, 255));
+  m_modLabel->runAction(CCFadeTo::create(0.1f, 255));
 
   auto desc = (*info)[0]->description;
   if (desc.empty()) desc = "No description provided.";
@@ -189,7 +189,7 @@ bool BadgesPopup::init(GJUserScore *score, ModStatus modStatus, std::vector<Badg
   m_buttonMenu->addChild(m_nextButton);
 
   m_closeBtn->setOpacity(0);
-  // m_closeBtn->runAction(CCFadeTo::create(0.1f, 255));
+  m_closeBtn->runAction(CCFadeTo::create(0.1f, 255));
 
   goToPage(true);
 
@@ -319,9 +319,9 @@ void BadgesPopup::setBadge(int page, float opacity, float xOffset, float scale,
       node->runAction(CCMoveTo::create(
           0.1f, {m_badgesContainer->getContentWidth() / 2.f + xOffset,
                  node->getPositionY()}));
-      // node->runAction(CCScaleTo::create(0.1f, scale));
+      node->runAction(CCScaleTo::create(0.1f, scale));
     }
-    // node->runAction(CCFadeTo::create(0.1f, opacity));
+    node->runAction(CCFadeTo::create(0.1f, opacity));
   }
 }
 
