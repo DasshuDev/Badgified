@@ -26,7 +26,7 @@ bool BadgesPopup::init(GJUserScore *score, ModStatus modStatus, std::vector<Badg
     stopAllActions();
   });
 
-  setID("BadgesPopup");
+  setID("badges-popup");
 
   m_score = score;
 
@@ -106,25 +106,13 @@ bool BadgesPopup::init(GJUserScore *score, ModStatus modStatus, std::vector<Badg
     idx++;
   }
 
-  auto bgDim = CCLayerColor::create();
-  bgDim->setColor({ 0, 0, 0 });
-  // bgDim->setContentSize({winSize.width, winSize.height});
-  bgDim->setPosition(winSize / 2.f);
-  bgDim->setAnchorPoint({0.5f, 0.5f});
-  bgDim->ignoreAnchorPointForPosition(false);
-  bgDim->setZOrder(-1000);
-  // bgDim->setID("background-dim");
-  bgDim->setOpacity(0);
-
-  addChild(bgDim);
-
   auto bg = NineSlice::create("GJ_square01.png");
   bg->setContentSize({winSize.width - 20, winSize.height - 20});
   bg->setPosition(winSize / 2.f);
   bg->setAnchorPoint({0.5f, 0.5f});
   bg->ignoreAnchorPointForPosition(false);
-  bg->setZOrder(-999);
-  // bg->setColor({0, 0, 0});
+  bg->setZOrder(-1000);
+  bg->setColor({0, 0, 0});
   bg->setID("background");
   bg->setOpacity(0);
 

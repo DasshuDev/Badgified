@@ -10,12 +10,6 @@ set(CMAKE_CXX_VISIBILITY_PRESET hidden)
 
 project(badgified VERSION 1.0.0)
 
-# Debug links the debug CRT, whose heap differs from Geode.dll's; memory freed
-# across that boundary corrupts the heap and kills GD with no crash log
-if (WIN32 AND CMAKE_BUILD_TYPE STREQUAL "Debug")
-    message(FATAL_ERROR "Debug builds crash in-game on Windows. Use RelWithDebInfo (or Release) instead.")
-endif()
-
 file(GLOB_RECURSE SOURCES CONFIGURE_DEPENDS src/*.cpp)
 
 include_directories(${CMAKE_SOURCE_DIR}/include)

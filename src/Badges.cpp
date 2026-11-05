@@ -9,17 +9,16 @@ Badges *Badges::get() {
   return &instance;
 }
 
-<<<<<<< HEAD
 bool Badges::isModeratorBadge(std::string_view id) {
-  return id == "advisor"_spr || id == "moderator"_spr ||
+  return id == "advisor"_spr ||
+         id == "moderator"_spr ||
          id == "leaderboard-moderator"_spr;
 }
 
 // clone the sprite
 static CCSprite *cloneSprite(CCSprite *src) {
   auto ret = CCSprite::createWithSpriteFrame(src->displayFrame());
-  if (!ret)
-    return nullptr;
+  if (!ret) return nullptr;
 
   ret->setFlipX(src->isFlipX());
   ret->setFlipY(src->isFlipY());
@@ -54,11 +53,8 @@ static CCSprite *cloneSprite(CCSprite *src) {
   return ret;
 }
 
+
 void Badges::showBadge(const dasshu::badgified::Badge &badge, CCNode *badgeNode) {
-=======
-void Badges::showBadge(const dasshu::badgified::Badge &badge,
-                       CCNode *badgeNode) {
->>>>>>> parent of 2340970 (2.2091 compat, waiting on NodeIDs to test)
   auto badgeIter = m_badges.find(badge.badgeID);
   if (badgeIter == m_badges.end())
     return;
@@ -83,8 +79,8 @@ void Badges::showBadge(const dasshu::badgified::Badge &badge,
   }
 }
 
-void Badges::removeBadge(std::shared_ptr<dasshu::badgified::Badge> badge,
-                         dasshu::badgified::BadgeInfo *badgeInfo) {
+
+void Badges::removeBadge(std::shared_ptr<dasshu::badgified::Badge> badge, dasshu::badgified::BadgeInfo *badgeInfo) {
   if (!m_activeNodes.contains(badge->target))
     return;
 
@@ -144,50 +140,25 @@ Result<cocos2d::ccColor3B> Badges::getCommentColor(ZStringView id) {
 }
 
 std::optional<cocos2d::ccColor3B> Badges::resolveCommentColor(
-<<<<<<< HEAD
   const std::vector<dasshu::badgified::BadgeInfo *> &badges) {
-=======
-    const std::vector<dasshu::badgified::BadgeInfo *> &badges) {
-  dasshu::badgified::BadgeInfo *elder = nullptr;
->>>>>>> parent of 2340970 (2.2091 compat, waiting on NodeIDs to test)
   dasshu::badgified::BadgeInfo *mod = nullptr;
   dasshu::badgified::BadgeInfo *advisor = nullptr;
   dasshu::badgified::BadgeInfo *leaderboard = nullptr;
   dasshu::badgified::BadgeInfo *bestCustom = nullptr;
 
   for (auto info : badges) {
-<<<<<<< HEAD
     if (info->id == "moderator"_spr) mod = info;
     else if (info->id == "advisor"_spr) advisor = info;
     else if (info->id == "leaderboard-moderator"_spr) leaderboard = info;
-=======
-    if (info->id == "elder-moderator"_spr)
-      elder = info;
-    else if (info->id == "moderator"_spr)
-      mod = info;
-    else if (info->id == "leaderboard-moderator"_spr)
-      leaderboard = info;
->>>>>>> parent of 2340970 (2.2091 compat, waiting on NodeIDs to test)
     else if (info->color && !bestCustom) {
       bestCustom = info;
     }
   }
 
-<<<<<<< HEAD
   if (mod && mod->color) return mod->color;
   if (advisor && advisor->color) return advisor->color;
   if (leaderboard && leaderboard->color) return leaderboard->color;
   if (bestCustom) return bestCustom->color;
-=======
-  if (elder && elder->color)
-    return elder->color;
-  if (mod && mod->color)
-    return mod->color;
-  if (leaderboard && leaderboard->color)
-    return leaderboard->color;
-  if (bestCustom)
-    return bestCustom->color;
->>>>>>> parent of 2340970 (2.2091 compat, waiting on NodeIDs to test)
   return std::nullopt;
 }
 
