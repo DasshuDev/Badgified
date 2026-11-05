@@ -9,16 +9,17 @@ $on_mod(Loaded) {
 
     // Moderator
     Badges::get()->registerBadge(
-        "advisor"_spr,
-        "Rating Advisor",
+        "moderator"_spr,
+        "Moderator",
 
-        "A Rating Advisor is identifiable through the Rating Advisor badge "
-        "in Geometry Dash. This role can be granted only by RobTop himself. Their main "
-        "task is suggesting good levels to RobTop for a rating. They also have more "
-        "power when voting for Demon difficulty.",
+        "A <cs>Moderator</c> is identifiable through the Moderator badge in "
+        "Geometry Dash. This role can be granted only by <co>RobTop</c> himself, "
+        "meaning that Moderators represent him as well as Geometry Dash "
+        "directly. Their main task is suggesting good levels to RobTop for a "
+        "rating. They also have more power when voting for Demon difficulty.",
 
         [](const Badge &badge) {
-        if (badge.modStatus == ModStatus::Advisor) {
+        if (badge.modStatus == ModStatus::Regular) {
             CCSprite *spr;
             if (badge.location == Location::InfoPopup) spr = CCSprite::create("mod-large.png"_spr);
             else spr = CCSprite::createWithSpriteFrameName("modBadge_01_001.png");
@@ -28,16 +29,17 @@ $on_mod(Loaded) {
 
     // Elder Moderator
     Badges::get()->registerBadge(
-        "moderator"_spr,
-        "Moderator",
+        "elder-moderator"_spr,
+        "Elder Moderator",
 
-        "A Moderator is identifiable through the Moderator badge in "
-        "Geometry Dash. Moderators are tasked not only with sending good levels, but "
-        "also moderating the in-game comment sections, whitelisting users on "
-        "Newgrounds, unlocking updates for older rated levels, and some other tasks.",
+        "An <co>Elder Moderator</c> is identifiable through the Elder Moderator "
+        "badge in Geometry Dash. Elder Moderators are tasked not only with "
+        "sending good levels, but also moderating the in-game comment sections, "
+        "whitelisting users on Newgrounds, unlocking updates for older rated "
+        "levels, and some other tasks.",
 
         [](const Badge &badge) {
-        if (badge.modStatus == ModStatus::Moderator) {
+        if (badge.modStatus == ModStatus::Elder) {
             CCSprite *spr;
             if (badge.location == Location::InfoPopup) spr = CCSprite::create("elder-mod-large.png"_spr);
             else spr = CCSprite::createWithSpriteFrameName("modBadge_02_001.png");
@@ -50,11 +52,10 @@ $on_mod(Loaded) {
         "leaderboard-moderator"_spr,
         "Leaderboard Moderator",
 
-        "Leaderboard Moderators manage the Leaderboards within the game. "
-        "They manage the Top 1000 whitelist and can ban players from both the Global "
-        "and Level Leaderboards. It is worth noting that they are not necessarily "
-        "a normal Moderator too. They also have more power when voting for Demon "
-        "difficulty.",
+        "<cl>Leaderboard Moderators</c> manage the Leaderboards within the game. "
+        "They manage the Top 1000 whitelist and can ban players from both the "
+        "Global and Level Leaderboards. It is worth noting that they are not "
+        "necessarily a normal Moderator too.",
 
         [](const Badge &badge) {
         if (badge.modStatus == ModStatus::Leaderboard) {
@@ -66,6 +67,6 @@ $on_mod(Loaded) {
         }
     });
 
-    Badges::get()->setCommentColor("advisor"_spr, {200, 255, 200});
-    Badges::get()->setCommentColor("moderator"_spr, {75, 255, 75});
+    Badges::get()->setCommentColor("moderator"_spr, {200, 255, 200});
+    Badges::get()->setCommentColor("elder-moderator"_spr, {75, 255, 75});
 }

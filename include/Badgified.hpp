@@ -12,7 +12,7 @@
 
 namespace dasshu::badgified {
 
-enum class ModStatus { User = 0, Advisor = 1, Moderator = 2, Leaderboard = 3 };
+enum class ModStatus { None = 0, Regular = 1, Elder = 2, Leaderboard = 3 };
 
 enum class Location { None = -1, Profile, Comment, InfoPopup };
 
@@ -52,24 +52,38 @@ template <typename F> void waitForBadgified(F &&callback) {
   }
 }
 
-GEODE_EVENT_EXPORT(void, registerBadge, (geode::ZStringView id, geode::ZStringView name, geode::ZStringView description, ProfileCallback onProfile), (id, name, description, std::move(onProfile)));
+inline void registerBadge(geode::ZStringView id, geode::ZStringView name,
+                          geode::ZStringView description,
+                          ProfileCallback onProfile)
+    GEODE_EVENT_EXPORT_NORES(&registerBadge,
+                             (id, name, description, std::move(onProfile)));
 
-GEODE_EVENT_EXPORT(void, unregisterBadge, (geode::ZStringView id), (id));
+inline void unregisterBadge(geode::ZStringView id)
+    GEODE_EVENT_EXPORT_NORES(&unregisterBadge, (id));
 
-GEODE_EVENT_EXPORT(void, setName, (geode::ZStringView id, geode::ZStringView name), (id, name));
+inline void setName(geode::ZStringView id, geode::ZStringView name)
+    GEODE_EVENT_EXPORT_NORES(&setName, (id, name));
 
-GEODE_EVENT_EXPORT(geode::Result<geode::ZStringView>, getName, (geode::ZStringView id), (id));
+inline geode::Result<geode::ZStringView> getName(geode::ZStringView id)
+    GEODE_EVENT_EXPORT(&getName, (id));
 
-GEODE_EVENT_EXPORT(void, setDescription, (geode::ZStringView id, geode::ZStringView description), (id, description));
+inline void setDescription(geode::ZStringView id,
+                           geode::ZStringView description)
+    GEODE_EVENT_EXPORT_NORES(&setDescription, (id, description));
 
-GEODE_EVENT_EXPORT(geode::Result<geode::ZStringView>, getDescription, (geode::ZStringView id), (id));
+inline geode::Result<geode::ZStringView> getDescription(geode::ZStringView id)
+    GEODE_EVENT_EXPORT(&getDescription, (id));
 
-GEODE_EVENT_EXPORT(void, setCommentColor, (geode::ZStringView id, cocos2d::ccColor3B color), (id, color));
+inline void setCommentColor(geode::ZStringView id, cocos2d::ccColor3B color)
+    GEODE_EVENT_EXPORT_NORES(&setCommentColor, (id, color));
 
-GEODE_EVENT_EXPORT(geode::Result<cocos2d::ccColor3B>, getCommentColor, (geode::ZStringView id), (id));
+inline geode::Result<cocos2d::ccColor3B> getCommentColor(geode::ZStringView id)
+    GEODE_EVENT_EXPORT(&getCommentColor, (id));
 
-GEODE_EVENT_EXPORT(void, setProfileCallback, (geode::ZStringView id, ProfileCallback onProfile), (id, std::move(onProfile)));
+inline void setProfileCallback(geode::ZStringView id, ProfileCallback onProfile)
+    GEODE_EVENT_EXPORT_NORES(&setProfileCallback, (id, std::move(onProfile)));
 
-GEODE_EVENT_EXPORT(void, showBadge, (const Badge &badge, cocos2d::CCNode *badgeNode), (badge, badgeNode));
+inline void showBadge(const Badge &badge, cocos2d::CCNode *badgeNode)
+    GEODE_EVENT_EXPORT_NORES(&showBadge, (badge, badgeNode));
 
 } // namespace dasshu::badgified

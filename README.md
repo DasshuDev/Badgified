@@ -7,12 +7,12 @@ An API for adding badges to profiles and comments easily.
 It is extremely simple, here's an example on how to register and modify a badge:
 
 ```cpp
-using namespace dasshu::badgified;
-
 // Important note: using this namespace is OPTIONAL!
-// When using Badgified's API, you either need to use
-// this namespace in your file or write
-// "dasshu::badgified::" in front of every function.
+// When using badgified's API, you either need to use
+// this namespace or write "dasshu::badgified::" in
+// front of every function.
+
+using namespace dasshu::badgified;
 
 $execute {
     registerBadge(
@@ -22,13 +22,13 @@ $execute {
         "Badge Name", 
         // The description shown when clicking the badge.
         "This is a description that goes along with the badge.", 
-        // Show the badge when a Location::Profile, Location::Comment,
+        // Show the badge when a Location::Profile,Location::Comment,
         // or Location::InfoPopup is loaded.
+        // showBadge can be called at any time and requires the Badge
+        // object and the node for the badge.
         [] (const Badge& badge) {
             if (badge.modStatus == ModStatus::Advisor) {
                 showBadge(badge, CCSprite::createWithSpriteFrameName("modBadge_01_001.png"));
-                // showBadge can be called at any time
-                // and requires the Badge object and node.
             }
         }
     );

@@ -9,6 +9,7 @@ Badges *Badges::get() {
   return &instance;
 }
 
+<<<<<<< HEAD
 bool Badges::isModeratorBadge(std::string_view id) {
   return id == "advisor"_spr || id == "moderator"_spr ||
          id == "leaderboard-moderator"_spr;
@@ -54,27 +55,16 @@ static CCSprite *cloneSprite(CCSprite *src) {
 }
 
 void Badges::showBadge(const dasshu::badgified::Badge &badge, CCNode *badgeNode) {
+=======
+void Badges::showBadge(const dasshu::badgified::Badge &badge,
+                       CCNode *badgeNode) {
+>>>>>>> parent of 2340970 (2.2091 compat, waiting on NodeIDs to test)
   auto badgeIter = m_badges.find(badge.badgeID);
   if (badgeIter == m_badges.end())
     return;
 
   if (!m_activeNodes.contains(badge.target))
     return;
-
-  if (!badgeNode)
-    return;
-
-  if (badgeNode->getUserObject("shown"_spr)) {
-    auto sprite = typeinfo_cast<CCSprite *>(badgeNode);
-    auto copy = sprite ? cloneSprite(sprite) : nullptr;
-    if (!copy) {
-      log::error("badge '{}' reused a node that is not a CCSprite; "
-                 "create a new node for each showBadge call", badge.badgeID);
-      return;
-    }
-    badgeNode = copy;
-  }
-  badgeNode->setUserObject("shown"_spr, CCBool::create(true));
 
   auto &vec = m_activeBadges[badge.badgeID];
   vec.push_back(std::make_shared<dasshu::badgified::Badge>(badge));
@@ -93,7 +83,8 @@ void Badges::showBadge(const dasshu::badgified::Badge &badge, CCNode *badgeNode)
   }
 }
 
-void Badges::removeBadge(std::shared_ptr<dasshu::badgified::Badge> badge, dasshu::badgified::BadgeInfo *badgeInfo) {
+void Badges::removeBadge(std::shared_ptr<dasshu::badgified::Badge> badge,
+                         dasshu::badgified::BadgeInfo *badgeInfo) {
   if (!m_activeNodes.contains(badge->target))
     return;
 
@@ -153,37 +144,67 @@ Result<cocos2d::ccColor3B> Badges::getCommentColor(ZStringView id) {
 }
 
 std::optional<cocos2d::ccColor3B> Badges::resolveCommentColor(
+<<<<<<< HEAD
   const std::vector<dasshu::badgified::BadgeInfo *> &badges) {
+=======
+    const std::vector<dasshu::badgified::BadgeInfo *> &badges) {
+  dasshu::badgified::BadgeInfo *elder = nullptr;
+>>>>>>> parent of 2340970 (2.2091 compat, waiting on NodeIDs to test)
   dasshu::badgified::BadgeInfo *mod = nullptr;
   dasshu::badgified::BadgeInfo *advisor = nullptr;
   dasshu::badgified::BadgeInfo *leaderboard = nullptr;
   dasshu::badgified::BadgeInfo *bestCustom = nullptr;
 
   for (auto info : badges) {
+<<<<<<< HEAD
     if (info->id == "moderator"_spr) mod = info;
     else if (info->id == "advisor"_spr) advisor = info;
     else if (info->id == "leaderboard-moderator"_spr) leaderboard = info;
+=======
+    if (info->id == "elder-moderator"_spr)
+      elder = info;
+    else if (info->id == "moderator"_spr)
+      mod = info;
+    else if (info->id == "leaderboard-moderator"_spr)
+      leaderboard = info;
+>>>>>>> parent of 2340970 (2.2091 compat, waiting on NodeIDs to test)
     else if (info->color && !bestCustom) {
       bestCustom = info;
     }
   }
 
+<<<<<<< HEAD
   if (mod && mod->color) return mod->color;
   if (advisor && advisor->color) return advisor->color;
   if (leaderboard && leaderboard->color) return leaderboard->color;
   if (bestCustom) return bestCustom->color;
+=======
+  if (elder && elder->color)
+    return elder->color;
+  if (mod && mod->color)
+    return mod->color;
+  if (leaderboard && leaderboard->color)
+    return leaderboard->color;
+  if (bestCustom)
+    return bestCustom->color;
+>>>>>>> parent of 2340970 (2.2091 compat, waiting on NodeIDs to test)
   return std::nullopt;
 }
 
-void Badges::setProfileCallback(ZStringView id, dasshu::badgified::ProfileCallback onProfile) {
+void Badges::setProfileCallback(ZStringView id,
+                                dasshu::badgified::ProfileCallback onProfile) {
   auto badgeIter = m_badges.find(id);
   if (badgeIter == m_badges.end())
     return;
   badgeIter->second.onProfile = std::move(onProfile);
 }
 
-void Badges::registerBadge(ZStringView id, ZStringView name, ZStringView description, dasshu::badgified::ProfileCallback onProfile) {
-  auto [it, b] = m_badges.emplace(id, dasshu::badgified::BadgeInfo{id, name, description, std::move(onProfile)});
+void Badges::registerBadge(ZStringView id, ZStringView name,
+                           ZStringView description,
+                           dasshu::badgified::ProfileCallback onProfile) {
+  auto [it, b] =
+      m_badges.emplace(id, dasshu::badgified::BadgeInfo{id, name, description,
+                                                        std::move(onProfile)});
 
   auto badgeInfo = &(*it).second;
   m_badgesIndexed.push_back(badgeInfo);
@@ -209,7 +230,9 @@ void Badges::unregisterBadge(ZStringView id) {
     removeBadge(badge, &m_badges.at(id));
   }
 
-  m_badgesIndexed.erase(std::remove(m_badgesIndexed.begin(), m_badgesIndexed.end(), &badgeIter->second), m_badgesIndexed.end());
+  m_badgesIndexed.erase(std::remove(m_badgesIndexed.begin(),
+                                    m_badgesIndexed.end(), &badgeIter->second),
+                        m_badgesIndexed.end());
   m_badges.erase(badgeIter);
 }
 
@@ -234,7 +257,9 @@ dasshu::badgified::Badge Badges::badgeForNode(CCNode *node, ZStringView id) {
     score = badgesPopup->getScore();
   }
 
-  return {id, location, static_cast<dasshu::badgified::ModStatus>(score->m_modBadge), score, node};
+  return {id, location,
+          static_cast<dasshu::badgified::ModStatus>(score->m_modBadge), score,
+          node};
 }
 
 void Badges::removeFromActiveBadges(
@@ -243,7 +268,9 @@ void Badges::removeFromActiveBadges(
   vec.erase(std::remove(vec.begin(), vec.end(), badge), vec.end());
 }
 
-void Badges::onProfile(CCNode *node, GJUserScore *score, dasshu::badgified::ModStatus modStatus, dasshu::badgified::Location location) {
+void Badges::onProfile(CCNode *node, GJUserScore *score,
+                       dasshu::badgified::ModStatus modStatus,
+                       dasshu::badgified::Location location) {
   for (auto badge : m_badgesIndexed) {
     if (badge->onProfile) {
       badge->onProfile({badge->id, location, modStatus, score, node});
