@@ -39,6 +39,37 @@ void BadgesCommentCell::loadFromComment(GJComment *comment) {
     return;
 
   fields->m_originalColor = fields->m_commentNode->getColor();
+  fields->m_canAddBadge = true;
+
+  addOnEnterCallback([this, fields] {
+    Badges::get()->addToActiveNodes(this);
+    for (const auto &owningBadge : fields->m_owningBadges) {
+      owningBadge->user = m_comment->m_userScore;
+      owningBadge->target = this;
+    }
+  });
+
+  addOnExitCallback([this, fields] {
+    Badges::get()->removeFromActiveNodes(this);
+    for (const auto &owningBadge : fields->m_owningBadges) {
+      owningBadge->user = nullptr;
+      owningBadge->target = nullptr;
+    }
+  });
+
+  fields->m_batching = true;
+  Badges::get()->onProfile(
+      this, comment->m_userScore,
+      static_cast<dasshu::badgified::ModStatus>(originalBadge),
+      dasshu::badgified::Location::Comment);
+  fields->m_batching = false;
+  flushBadges();
+}
+
+void BadgesCommentCell::ensureBadgeButton() {
+  auto fields = m_fields.self();
+  if (fields->m_badgesButton)
+    return;
 
   fields->m_badgeNode = CCNode::create();
   fields->m_badgeNode->setID("badges-container"_spr);
@@ -64,34 +95,6 @@ void BadgesCommentCell::loadFromComment(GJComment *comment) {
   fields->m_badgesButton->setZOrder(-1);
 
   fields->m_usernameMenu->addChild(fields->m_badgesButton);
-
-  fields->m_canAddBadge = true;
-
-  addOnEnterCallback([this, fields] {
-    Badges::get()->addToActiveNodes(this);
-    for (const auto &owningBadge : fields->m_owningBadges) {
-      owningBadge->user = m_comment->m_userScore;
-      owningBadge->target = this;
-    }
-  });
-
-  addOnExitCallback([this, fields] {
-    Badges::get()->removeFromActiveNodes(this);
-    for (const auto &owningBadge : fields->m_owningBadges) {
-      owningBadge->user = nullptr;
-      owningBadge->target = nullptr;
-    }
-  });
-
-  updateBadges();
-
-  fields->m_batching = true;
-  Badges::get()->onProfile(
-      this, comment->m_userScore,
-      static_cast<dasshu::badgified::ModStatus>(originalBadge),
-      dasshu::badgified::Location::Comment);
-  fields->m_batching = false;
-  flushBadges();
 }
 
 void BadgesCommentCell::flushBadges() {
@@ -160,7 +163,7 @@ void BadgesCommentCell::updateColor() {
 
 void BadgesCommentCell::updateBadges() {
   auto fields = m_fields.self();
-  if (!fields->m_canAddBadge)
+  if (!fields->m_canAddBadge || !fields->m_badgesButton)
     return;
 
   fields->m_badgeNode->updateLayout();
@@ -190,6 +193,10 @@ void BadgesCommentCell::unregisterTouchesRecursive(CCNode *node) {
 
 void BadgesCommentCell::setupBadges() {
   auto fields = m_fields.self();
+  if (fields->m_badgeNodes.empty() && !fields->m_badgesButton)
+    return;
+
+  ensureBadgeButton();
   fields->m_badgeNode->removeAllChildren();
 
   int idx = 1;
@@ -213,10 +220,18 @@ void BadgesCommentCell::setupBadges() {
     badgeNode->setID(fmt::format("{}-badge", info->id));
 
     fields->m_badgeNode->addChild(badgeNode);
-    badgeNode->runAction(CallFuncExt::create(
-        [this, badgeNode] { unregisterTouchesRecursive(badgeNode); }));
     idx++;
   }
+
+  // badge nodes re-register their touches when re-added, so strip them once
+  // next frame for the whole container instead of queueing one action per badge
+  constexpr int kTouchFixTag = 0x6261646;
+  fields->m_badgeNode->stopActionByTag(kTouchFixTag);
+  auto touchFix = CallFuncExt::create([this, badgeNode = fields->m_badgeNode] {
+    unregisterTouchesRecursive(badgeNode);
+  });
+  touchFix->setTag(kTouchFixTag);
+  fields->m_badgeNode->runAction(touchFix);
 }
 
 void BadgesCommentCell::addToBadgeContainer(dasshu::badgified::BadgeInfo *info,

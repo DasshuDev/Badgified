@@ -1,7 +1,7 @@
 # 1.0.5
-- Bump to Geode v6.x and GD 2.2091.
-- Updated badge information to its latest counterpart: "Rating Advisors" (ew).
-- Optimized load times on comments per profile.
+- Bump to Geode v6.x and GD 2.209x.
+- Updated badges and badge information.
+- Optimized load times in CommentCell (hopefully).
 
 # v1.0.4
 - Bump to Geode v5.10.1.

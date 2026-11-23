@@ -46,7 +46,7 @@ bool BadgesPopup::init(GJUserScore *score, ModStatus modStatus, std::vector<Badg
   auto backSpr = CCSprite::createWithSpriteFrameName("backArrowPlain_01_001.png");
 
   m_closeBtn->setPosition({35, winSize.height - 35});
-  m_closeBtn->setSprite(backSpr);
+  setCloseButtonSpr(backSpr);
   m_closeBtn->setID("close-button");
 
   std::set<std::string> usedIDs;

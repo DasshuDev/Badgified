@@ -2,7 +2,7 @@
 
 #include <Geode/binding/GJUserScore.hpp>
 #include <Geode/cocos/base_nodes/CCNode.h>
-#include <Geode/loader/Dispatch.hpp>
+#include <Geode/loader/EventExport.hpp>
 #include <Geode/loader/Event.hpp>
 #include <Geode/utils/ZStringView.hpp>
 #include <Geode/utils/cocos.hpp>

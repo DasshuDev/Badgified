@@ -12,7 +12,9 @@ Badges *Badges::get() {
 bool Badges::isModeratorBadge(std::string_view id) {
   return id == "advisor"_spr ||
          id == "moderator"_spr ||
-         id == "leaderboard-moderator"_spr;
+         id == "leaderboard-moderator"_spr ||
+         id == "legacy-moderator"_spr ||
+         id == "legacy-elder-moderator"_spr;
 }
 
 // clone the sprite

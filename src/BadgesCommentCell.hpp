@@ -10,12 +10,12 @@ using namespace geode::prelude;
 class $modify(BadgesCommentCell, CommentCell) {
 
   struct Fields {
-    CCNode *m_self;
-    CCNode *m_usernameNode;
-    CCNode *m_usernameMenu;
-    CCLabelBMFont *m_commentNode;
-    CCNode *m_badgeNode;
-    CCMenuItemSpriteExtra *m_badgesButton;
+    CCNode *m_self = nullptr;
+    CCNode *m_usernameNode = nullptr;
+    CCNode *m_usernameMenu = nullptr;
+    CCLabelBMFont *m_commentNode = nullptr;
+    CCNode *m_badgeNode = nullptr;
+    CCMenuItemSpriteExtra *m_badgesButton = nullptr;
     std::vector<dasshu::badgified::BadgeInfo *> m_badges;
     std::vector<std::shared_ptr<dasshu::badgified::Badge>> m_owningBadges;
     std::unordered_map<dasshu::badgified::BadgeInfo *, Ref<CCNode>>
@@ -42,6 +42,7 @@ class $modify(BadgesCommentCell, CommentCell) {
   void updateBadges();
   void updateColor();
   void flushBadges();
+  void ensureBadgeButton();
   void unregisterTouchesRecursive(CCNode *node);
   void addToBadgeContainer(dasshu::badgified::BadgeInfo *info,
                            CCNode *badgeNode);

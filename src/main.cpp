@@ -20,7 +20,7 @@ $on_mod(Loaded) {
         [](const Badge &badge) {
         if (badge.modStatus == ModStatus::Advisor) {
             CCSprite *spr;
-            if (badge.location == Location::InfoPopup) spr = CCSprite::create("mod-large.png"_spr);
+            if (badge.location == Location::InfoPopup) spr = CCSprite::create("advisor-large.png"_spr);
             else spr = CCSprite::createWithSpriteFrameName("modBadge_01_001.png");
             Badges::get()->showBadge(badge, spr);
         }
@@ -66,6 +66,6 @@ $on_mod(Loaded) {
         }
     });
 
-    Badges::get()->setCommentColor("moderator"_spr, {200, 255, 200});
-    Badges::get()->setCommentColor("elder-moderator"_spr, {75, 255, 75});
+    Badges::get()->setCommentColor("advisor"_spr, {200, 255, 200});
+    Badges::get()->setCommentColor("moderator"_spr, {75, 255, 75});
 }
