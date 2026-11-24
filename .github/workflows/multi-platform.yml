@@ -41,12 +41,6 @@ jobs:
         with:
           combine: true
           target: ${{ matrix.config.target }}
-      
-      - uses: geode-sdk/build-geode-mod/combine@main
-        id: build
-        with:
-          zstd: true
-          optimize-pngs: true
 
   package:
     name: Package builds
